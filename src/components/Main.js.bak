@@ -1,0 +1,70 @@
+import React from 'react';
+import Button from "./Button";
+import CurrentRoll from "./CurrentRoll";
+import PreviousRolls from "./PreviousRolls";
+
+class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: undefined,
+      previous: []
+    }
+    this.probability = this.probability.bind(this);
+    this.generateTenArr = this.generateTenArr.bind(this);
+    this.roll = this.roll.bind(this);
+  }
+
+  probability(num) {
+    const lightThresholds = {
+      SSR: 0.07,
+      SR: 0.19,
+      R: 0.45
+    }
+    const ssrchar = ["https://azurlane.koumakan.jp/w/images/1/1d/MontpelierIcon.png", "https://azurlane.koumakan.jp/w/images/c/c2/San_DiegoIcon.png"];
+    const srchar = ["https://azurlane.koumakan.jp/w/images/6/6b/DenverIcon.png", "https://azurlane.koumakan.jp/w/images/4/48/ClevelandIcon.png"];
+    const rchar = ["https://azurlane.koumakan.jp/w/images/7/76/ChicagoIcon.png", "https://azurlane.koumakan.jp/w/images/2/2a/PhoenixIcon.png"];
+    const nchar = ["https://azurlane.koumakan.jp/w/images/c/c4/MutsukiIcon.png", "https://azurlane.koumakan.jp/w/images/f/f7/FooteIcon.png"];
+    const {SSR, SR, R} = lightThresholds;
+    if (num <= SSR) {
+      return ssrchar[Math.floor(Math.random() * ssrchar.length)];
+    } else if (num <= SR) {
+      return srchar[Math.floor(Math.random() * ssrchar.length)]
+    } else if (num <= R) {
+      return rchar[Math.floor(Math.random() * ssrchar.length)]
+    } else {
+      return nchar[Math.floor(Math.random() * ssrchar.length)]
+    }
+  }
+
+  generateTenArr() {
+    let arr = [];
+    for (let i = 0; i <= 10; i++) {
+      arr.push(Math.random());
+    }
+    return arr;
+  }
+
+  roll(arr) {
+    const mapped = arr.map(roll => this.probability(roll));
+    this.setState((prevState) => ({current: mapped, previous: prevState.previous.concat(mapped)}))
+  }
+
+  render() {
+    const rollOneArr = [Math.random()];
+    const rollTenArr = this.generateTenArr();
+    return (
+      <div>
+        <h2>Main</h2>
+        <div>
+          <Button desc={"Roll One"} probability={() => this.roll(rollOneArr)} />
+          <Button desc={"Roll Ten"} probability={() => this.roll(rollTenArr)}/>
+        </div>
+        <CurrentRoll current={this.state.current} />
+        <PreviousRolls prev={this.state.previous} />
+      </div>
+    )
+  }
+}
+
+export default Main;
